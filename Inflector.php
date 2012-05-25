@@ -1,9 +1,36 @@
 <?php
 
+/**
+ * Inflector was an idea I had/took from Kohana (where most of this code can actually be found). Kohana as
+ * this neat class which can pluralize or singularize (amongst other things) words. Projects I was working
+ * on needed this exactly functionality, so I merged Kohana's inflector class, merged it into this Zend
+ * extension, and made it available as both a statically available singleton, or via a ViewHelper 
+ * (BTS_View_Helper_Inflector).
+ *
+ * Usage:
+ * $inflector = new BTS_Inflector();
+ * echo $inflector->pluralize("car"); // outputs "cars"
+ * echo $inflector->pluralize("story"); // outputs "stories"
+ * echo $inflector->singularize("stories"); // outputs "story"
+ * echo $inflector->singularize("sheep"); // outputs "sheep"
+ *
+ * It can also be called with BTS_Inflector::instance()->pluralize("...");
+ *
+ * Functions:
+ * pluralize: make plural a singular word passed (car => cars)
+ * singularize: make singular a plural word passed (cars => car)
+ * wrapInPTags: given a whole bunch of text, strips unnecessary line endings, and wraps somewhat sanely
+ *              with <p></p> tags for decent front-end display
+ */
+
 class BTS_Inflector {
     
     private static $_instance;
     
+    /**
+      * Get a singleton instance.
+      * @return \BTS_Inflector
+      */
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -11,6 +38,10 @@ class BTS_Inflector {
         return self::$_instance;
     }
     
+    /**
+      * Get inflector configuration file/data
+      * @return \Zend_Config_Xml
+      */
     public function getInflectorConfig() {
         $cache = false;
         if($cache === false) {
