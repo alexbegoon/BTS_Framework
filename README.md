@@ -6,3 +6,5 @@ An extension to Zend Framework to make it a little bit more useful. There may be
 Note: only some of this code is production tested. It's relatively new, and I'm using it to build a couple of websites.
 
 Disclaimer: Use if you want to. I don't expect you to. This is here primarily for my benefit, but if you find a use for it to, then go for it. I'd like to know who does actually find uses for it, drop me a link if you want.
+
+There's also a bunch of application.ini settings that various elements of this needs. I'll post a sanitized/clean version of what it needs to operate at some random point in the future.
