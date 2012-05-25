@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<config>
+    <uncountable>
+        <access />
+        <advice />
+        <aircraft />
+        <art />
+        <baggage />
+        <bison />
+        <dances />
+        <deer />
+        <equipment />
+        <fish />
+        <fuel />
+        <furniture />
+        <heat />
+        <honey />
+        <homework />
+        <impatience />
+        <information />
+        <knowledge />
+        <luggage />
+        <media />
+        <money />
+        <moose />
+        <music />
+        <news />
+        <patience />
+        <progress />
+        <pollution />
+        <research />
+        <rice />
+        <salmon />
+        <sand />
+        <series />
+        <sheep />
+        <sms />
+        <spam />
+        <species />
+        <staff />
+        <swine />
+        <toothpaste />
+        <traffic />
+        <understanding />
+        <water />
+        <weather />
+        <work />
+    </uncountable>
+    <irregular>
+        <child>children</child>
+        <clothes>clothing</clothes>
+        <man>men</man>
+        <person>people</person>
+        <woman>women</woman>
+        <mouse>mice</mouse>
+        <goose>geese</goose>
+        <ox>oxen</ox>
+        <leaf>leaves</leaf>
+        <course>courses</course>
+        <size>sizes</size>
+        <was>were</was>
+        <is>are</is>
+        <verse>verses</verse>
+        <hero>heroes</hero>
+        <purchase>purchases</purchase>
+        <expense>expenses</expense>
+    </irregular>
+</config>
