@@ -25,6 +25,11 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             unset($urlOptions['_host']);
         }
         
+        if (isset($urlOptions['fragment'])) {
+            $fragment = $urlOptions['fragment'];
+            unset($urlOptions['fragment']);
+        }
+        
         if (is_null($name)) {
             $name = "default";
         }
@@ -34,10 +39,16 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             if (!is_null($host)) {
                 $hostHelper->setHost($host);
             }
-            return $hostHelper->serverUrl($router->assemble($urlOptions, $name, $reset, $encode));
+            $url = $hostHelper->serverUrl($router->assemble($urlOptions, $name, $reset, $encode));
         }
         else {
-            return $router->assemble($urlOptions, $name, $reset, $encode);
+            $url = $router->assemble($urlOptions, $name, $reset, $encode);
         }
+        
+        if (isset($fragment)) {
+            $url .= "#" . $fragment;
+        }
+        
+        return $url;
     }
 }
