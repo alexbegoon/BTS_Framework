@@ -2,6 +2,8 @@
 
 date_default_timezone_set('Europe/London');
 
+// You'll need to change the checks below in order to initialize the correct APPLICATION_ENV via the CLI,
+// since using getenv() here isn't really an option.
 if (php_uname("n") == "dan-laptop") {
     define("APPLICATION_ENV", "development");
 }
@@ -26,6 +28,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 )));
 
 require_once('Zend/Loader/Autoloader.php');
+// Should probably take this from the main config file...
 Zend_Loader_Autoloader::getInstance()->registerNamespace("App_");
 Zend_Loader_Autoloader::getInstance()->registerNamespace("BTS_");
 Zend_Loader_Autoloader::getInstance()->registerNamespace("Zend_");
