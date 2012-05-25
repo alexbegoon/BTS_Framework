@@ -38,7 +38,7 @@ class BTS_Model_Email_Queue extends BTS_Model {
     }
     
     public function generateUnsubscribeAddress() {
-        return "unsubscribe-" . $this->getUniqueId() . "@automation.mysalonnewsletter.com";
+        return "unsubscribe-" . $this->getUniqueId() . "@" . BTS_Base::getAppConfig()->bts->email->catchall_process_domain;
     }
     
     public function send() {
@@ -74,8 +74,7 @@ class BTS_Model_Email_Queue extends BTS_Model {
         $mail->setSubject($this->getMessage()->getSubject());
         
         if ($this->getMessage()->getSenderEmail() != "") {
-            //$mail->setFrom($this->getMessage()->getSenderEmail(), $this->getMessage()->getSenderName());
-            $mail->setFrom("noreply@mysalonnewsletter.com", $this->getMessage()->getSenderName());
+            $mail->setFrom($this->getMessage()->getSenderEmail(), $this->getMessage()->getSenderName());
             $mail->setReplyTo($this->getMessage()->getSenderEmail());
         }
         else {
@@ -87,7 +86,8 @@ class BTS_Model_Email_Queue extends BTS_Model {
 
         $mail->addTo($this->getRecipientEmail(), $this->getRecipientName());
         if ($this->getMessageType() & BTS_Model_Email_Message::TYPE_NOTIFICATION) {
-            //$mail->addBcc("dan@danneh.org");
+            // insert your email here to get bcc'd any email that you sent with this class
+            //$mail->addBcc("you@me.com");
         }
         
         $msgbody = $this->getMessage()->render();
