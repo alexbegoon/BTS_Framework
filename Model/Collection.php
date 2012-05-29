@@ -48,11 +48,11 @@ abstract class BTS_Model_Collection implements Iterator, Countable, ArrayAccess 
      */
     protected function _load() {
         if (!$this->_loaded) {
-            $key = $this->getCacheKey() . "__" . md5((string)$this->getSelect());
-            if (!$data = BTS_Base::getCache()->load($key)) {
+            //$key = $this->getCacheKey() . "__" . md5((string)$this->getSelect());
+            //if (!$data = BTS_Base::getCache()->load($key)) {
                 $data = $this->_getDb()->fetchAll($this->getSelect());
-                BTS_Base::getCache()->save($data, $key);
-            }
+                //BTS_Base::getCache()->save($data, $key);
+            //}
             
             foreach ($data as $row) {
                 $obj = new $this->_modelClass;

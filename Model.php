@@ -135,11 +135,11 @@ abstract class BTS_Model extends BTS_Object {
             $select->order($this->primaryKey() . " " . $order);
         }
         
-        $key = $this->getCacheKey() . "__" . md5((string)$select);
-        if (!$data = BTS_Base::getCache()->load($key)) {
+        //$key = $this->getCacheKey() . "__" . md5((string)$select);
+        //if (!$data = BTS_Base::getCache()->load($key)) {
             $data = $this->_getDb()->fetchRow($select);
-            BTS_Base::getCache()->save($data, $key);
-        }
+            //BTS_Base::getCache()->save($data, $key);
+        //}
         if ($data) {
             $this->_loaded = true;
             $this->setData($data);
