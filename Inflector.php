@@ -162,4 +162,84 @@ class BTS_Inflector {
         
         return $finalText;
     }
+    
+    public function generateSaneUrlKey($text) {
+        $text = strtolower($text);
+        $text = preg_replace("/[^a-z0-9\s]/", "", $text);
+        $text = trim($text);
+        $text = preg_replace('/\s+/','-',$text);
+        return $text;
+    }
+    
+    public function convertSmartQuotes($string) { 
+        $search = array(
+            chr(145), 
+            chr(146), 
+            chr(147), 
+            chr(148), 
+            chr(151),
+            '<br>',
+            "â",
+            "â",
+            "â",
+            "â€",
+            "",
+            'â"',
+            "â€™",
+            "â€œ",
+            "“",
+            "”",
+            "’",
+            "‘",
+            "…",
+            '��"',
+            "–",
+            'â€"',
+            chr(226),
+            chr(239)
+        ); 
+
+        $replace = array("'", 
+            "'", 
+            '"', 
+            '"', 
+            '-',
+            '',
+            "'",
+            "'",
+            '"',
+            '"',
+            "-",
+            "-",
+            "'",
+            '"',
+            '"',
+            '"',
+            "'",
+            "'",
+            "...",
+            "--",
+            "--",
+            '--',
+            "",
+            ""
+        );
+        
+	$str = str_replace($search, $replace, $string);
+	
+	$search = array();
+	$replace = array();
+	for ($i = 0; $i < 255; $i++) {
+            if ($i == 10 || $i == 13) continue;
+            if ($i < 32 || $i > 126) {
+                $search[] = chr($i);
+                $replace[] = "";
+            }
+	}
+	
+	$str = str_replace($search, $replace, $str);
+	
+	return $str; 
+    }
+    
 }
