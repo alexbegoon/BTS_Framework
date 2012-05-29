@@ -81,15 +81,8 @@ abstract class BTS_Model extends BTS_Object {
     public function save() {
         $this->_beforeSave();
         
-        if (is_array($this->_extraData) && count($this->_extraData) > 0) {
-            if (is_null($this->_extraDataField)) {
-                throw new Exception("ExtraData has been defined, yet this model does not have an ExtraData field assigned.");
-            }
-            
-            $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
-        }
-        
-        if (is_null($this->getId())) {
+        // an isLoaded flag will be set when the model is loaded, and not set when a new model is created ready to be saved.
+        if (!$this->isLoaded()) {
             $this->_getDb()->insert($this->table(), $this->getData());
             $this->setData($this->primaryKey(), $this->_getDb()->lastInsertId());
             
@@ -102,12 +95,22 @@ abstract class BTS_Model extends BTS_Object {
             unset($data[$this->primaryKey()]);
             $this->_getDb()->update($this->table(), $data, $this->primaryKey() . " = " . $this->getId());
         }
+        
         $this->_afterSave();
+        
         return $this;
     }
     
     // to be overriden
-    protected function _beforeSave() {}
+    protected function _beforeSave() {
+        if (is_array($this->_extraData) && count($this->_extraData) > 0) {
+            if (is_null($this->_extraDataField)) {
+                throw new Exception("ExtraData has been defined, yet this model does not have an ExtraData field assigned.");
+            }
+            
+            $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
+        }
+    }
     protected function _afterSave() {}
     
     /**
