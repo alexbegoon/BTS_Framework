@@ -9,7 +9,7 @@ ini_set('display_errors',true);
 
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/application'));
+    || define('APPLICATION_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/application');
 
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
