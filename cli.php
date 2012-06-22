@@ -2,28 +2,18 @@
 
 date_default_timezone_set('Europe/London');
 
-// You'll need to change the checks below in order to initialize the correct APPLICATION_ENV via the CLI,
-// since using getenv() here isn't really an option.
-if (php_uname("n") == "dan-laptop") {
-    define("APPLICATION_ENV", "development");
-}
-elseif (strpos(__FILE__, "/home/admin") !== false) {
-    define("APPLICATION_ENV", "staging");
-}
-else {
-    define("APPLICATION_ENV", "production");
-}
+define("APPLICATION_ENV", "production");
 
 error_reporting(E_ALL|E_STRICT);
 ini_set('display_errors',true);
 
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/application'));
+    || define('APPLICATION_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/application'));
 
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(dirname(__FILE__) . '/library'),
+    realpath(dirname($_SERVER['SCRIPT_FILENAME']) . '/library'),
     get_include_path(),
 )));
 
@@ -78,7 +68,7 @@ if(isset($opts->a)) {
     $front->setResponse(new Zend_Controller_Response_Cli());
     
     $front->throwExceptions(true);
-    $front->addModuleDirectory(dirname(__FILE__) . '/application/modules/');
+    $front->addModuleDirectory(dirname($_SERVER['SCRIPT_FILENAME']) . '/application/modules/');
 
     $front->dispatch();
 }
