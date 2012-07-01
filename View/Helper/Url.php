@@ -12,6 +12,28 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             $reset = $urlOptions['_reset'];
             unset($urlOptions['_reset']);
         }
+        else {
+            // attempt to intelligently detect whether to reset or not.
+            // 
+            // take a copy of the options array
+            $regularKeys = 0;
+            foreach ($urlOptions as $key => $val) {
+                // remove keys which translate to actions for the router assembly
+                if (substr($key, 0, 1) != "_") {
+                    $regularKeys++;
+                }
+            }
+            
+            if (!isset($urlOptions['controller']) && !isset($urlOptions['action']) || $regularKeys > 0) {
+                // didn't specify a controller or action, or specified other keys (possibly url paramters)
+                // so probably wants current url. don't reset
+                $reset = false;
+            }
+            else {
+                $reset = true;
+            }
+        }
+        
         if (isset($urlOptions['_encode'])) {
             $reset = $urlOptions['_encode'];
             unset($urlOptions['_encode']);
