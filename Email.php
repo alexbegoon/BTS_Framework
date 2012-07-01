@@ -112,7 +112,7 @@ class BTS_Email extends BTS_Object {
         
         $message->setData(
                 array(
-                    "user_id" => ($user ? $user->getId() : null),
+                    "user_id" => ($user instanceof BTS_Model ? $user->getId() : null),
                     "subject" => $this->getSubject(),
                     "message" => $this->getData('original_message'),
                     "html" => ($this->_html ? "1" : "0"),
