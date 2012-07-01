@@ -3,7 +3,8 @@
 require_once(dirname(__FILE__) . "/functions.php");
 
 class BTS_Base {
-    static $_config;
+    static $_appConfig;
+    static $_moduleConfig;
     static $_sessions;
     static $_cache;
     
@@ -31,10 +32,17 @@ class BTS_Base {
         return preg_replace('/[_-]+/', ' ', trim($str));
     }
     static function getAppConfig() {
-        if (is_null(self::$_config)) {
-            self::$_config = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
+        if (is_null(self::$_appConfig)) {
+            self::$_appConfig = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
         }
-        return self::$_config;
+        return self::$_appConfig;
+    }
+    static function getModuleConfig() {
+        if (is_null(self::$_moduleConfig)) {
+            $moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
+            self::$_moduleConfig = new Zend_Config_Ini(APPLICATION_PATH . "/modules/" . $moduleName . "/configs/module.ini", APPLICATION_ENV);
+        }
+        return self::$_moduleConfig;
     }
     static function getModel($modelClass, $constructionArgs = null) {
         return new $modelClass($constructionArgs);
