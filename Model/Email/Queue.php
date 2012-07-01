@@ -73,14 +73,18 @@ class BTS_Model_Email_Queue extends BTS_Model {
         
         $mail->setSubject($this->getMessage()->getSubject());
         
-        if ($this->getMessage()->getSenderEmail() != "") {
+        if ($this->getMessage()->getSenderEmail() != "" && $config->bts->email->sendmethod != "ses") {
             $mail->setFrom($this->getMessage()->getSenderEmail(), $this->getMessage()->getSenderName());
-            $mail->setReplyTo($this->getMessage()->getSenderEmail());
         }
         else {
             $mail->setFrom($config->bts->email->from_address, ($this->getMessage()->getSenderName() != "" ? $this->getMessage()->getSenderName() : $config->bts->email->from_name));
-            if ($config->bts->email->reply_to) {
-                $mail->setReplyTo($config->bts->email->reply_to);
+            if ($this->getMessageType() & BTS_Model_Email_Message::TYPE_NEWSLETTER) {
+                $mail->setReplyTo($this->getMessage()->getSenderEmail());
+            }
+            else {
+                if ($config->bts->email->reply_to) {
+                    $mail->setReplyTo($config->bts->email->reply_to);
+                }
             }
         }
 

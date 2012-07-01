@@ -8,6 +8,11 @@ abstract class BTS_Model extends BTS_Object {
      */
     protected $_table;
     
+    /*
+     * Original data array. Used to determine if data has changed.
+     */
+    protected $_origData = array();
+    
     /**
      * Primary Key column
      * @var string
@@ -66,6 +71,7 @@ abstract class BTS_Model extends BTS_Object {
         if (!is_null($this->_extraDataField) && $this->getData($this->_extraDataField) != "") {
             $this->_extraData = unserialize(base64_decode($this->getData($this->_extraDataField)));
         }
+        $this->_origData = $this->_data;
     }
     /**
      * Super-function to call afterLoad from the Collection loader
@@ -73,6 +79,7 @@ abstract class BTS_Model extends BTS_Object {
      */
     public function __afterLoad() {
         $this->_afterLoad();
+        $this->_loaded = true;
     }
     
     /**
@@ -263,5 +270,15 @@ abstract class BTS_Model extends BTS_Object {
     
     public function addHook($hook, $something) {
         // do..something.
+    }
+    
+    public function getOrigData($key = null, $default = null) {
+        if (is_null($key)) {
+            return $this->_origData;
+        }
+        if (isset($this->_origData[$key])) {
+            return $this->_origData[$key];
+        }
+        return $default;
     }
 }
