@@ -85,7 +85,7 @@ class BTS_Base {
             $data = print_r($data, true);
         }
         
-        $data = date("Y-m-d H:i:s") . ": " . $data;
+        $data = date("Y-m-d H:i:s") . ": " . $data . "\n";
         
         $fh = fopen(self::getAppConfig()->bts->logpath, "a");
         fwrite($fh, $data);
