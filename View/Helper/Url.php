@@ -4,10 +4,6 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
     public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true, $absolute = true, $host = null) {
         $router = Zend_Controller_Front::getInstance()->getRouter();
         
-        if (isset($urlOptions['_name'])) {
-            $name = $urlOptions['_name'];
-            unset($urlOptions['_name']);
-        }
         if (isset($urlOptions['_reset'])) {
             $reset = $urlOptions['_reset'];
             unset($urlOptions['_reset']);
@@ -34,22 +30,46 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             }
         }
         
+        if (isset($urlOptions['_name'])) {
+            $name = $urlOptions['_name'];
+            unset($urlOptions['_name']);
+        }
         if (isset($urlOptions['_encode'])) {
-            $reset = $urlOptions['_encode'];
+            $encode = $urlOptions['_encode'];
             unset($urlOptions['_encode']);
         }
         if (isset($urlOptions['_absolute'])) {
-            $reset = $urlOptions['_absolute'];
+            $absolute = $urlOptions['_absolute'];
             unset($urlOptions['_absolute']);
         }
         if (isset($urlOptions['_host'])) {
-            $reset = $urlOptions['_host'];
+            $host = $urlOptions['_host'];
             unset($urlOptions['_host']);
         }
         
         if (isset($urlOptions['fragment'])) {
             $fragment = $urlOptions['fragment'];
             unset($urlOptions['fragment']);
+        }
+        
+        if (isset($urlOptions['_removeParam'])) {
+            $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+            
+            if (is_string($urlOptions['_removeParam'])) {
+                $urlOptions['_removeParam'] = array($urlOptions['_removeParam']);
+            }
+            
+            foreach ($urlOptions['_removeParam'] as $param) {
+                if (isset($currentParams[$param])) {
+                    unset($currentParams[$param]);
+                }
+            }
+            unset($urlOptions['_removeParam']);
+            
+            // force a reset to remove the requested param(s)
+            $reset = true;
+            
+            $urlOptions = $urlOptions + $currentParams;
         }
         
         if (is_null($name)) {
