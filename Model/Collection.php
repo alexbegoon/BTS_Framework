@@ -57,13 +57,33 @@ abstract class BTS_Model_Collection implements Iterator, Countable, ArrayAccess 
             foreach ($data as $row) {
                 $obj = new $this->_modelClass;
                 $obj->setData($row);
+                $this->_afterLoadPreProcess($obj);
                 $obj->__afterLoad();
+                $this->_afterLoadPostProcess($obj);
                 array_push($this->_dataArray, $obj);
             }
             $this->_loaded = true;
         }
         return $this;
     }
+    
+    /**
+     * Function is called after a row is retrieved from the database, after it's
+     * been set to the model object, but before the model's _afterLoad function
+     * is called.
+     * 
+     * @param BTS_Model $obj 
+     */
+    protected function _afterLoadPreProcess(BTS_Model $obj) {}
+    
+    /**
+     * Function is called after a row is retrieved from the database, after it's
+     * been set to the model object, and after the model's own _afterLoad function
+     * has been called.
+     * 
+     * @param BTS_Model $obj 
+     */
+    protected function _afterLoadPostProcess(BTS_Model $obj) {}
     
     /**
      * @return Zend_Db_Select
