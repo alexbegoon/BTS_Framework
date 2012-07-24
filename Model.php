@@ -31,8 +31,19 @@ abstract class BTS_Model extends BTS_Object {
      * @var Zend_Db_Adapter_Abstract
      */
     protected $_db;
+    protected $_schema;
     
     public function __construct($id = null, $key = null) {
+        $registryKey = $this->getSchemaCacheKey();
+        if (!Zend_Registry::isRegistered($registryKey)) {
+            $schema = BTS_Db::instance()->describeTable($this->table());
+            Zend_Registry::set($registryKey, $schema);
+        }
+        else {
+            $schema = Zend_Registry::get($registryKey);
+        }
+        $this->_schema = $schema;
+        
         if (!is_null($id)) {
             return $this->load($id, $key);
         }
@@ -88,19 +99,32 @@ abstract class BTS_Model extends BTS_Object {
     public function save() {
         $this->_beforeSave();
         
+        // this prevents sql errors caused by data keys sent to the model and the column
+        // not existing in the database.
+        $dataArray = array();
+        foreach ($this->getData() as $key => $value) {
+            if (isset($this->_schema[$key])) {
+                if ($value == "" && $this->_schema[$key]['NULLABLE']) {
+                    $value = null;
+                }
+                
+                $dataArray[$key] = $value;
+            }
+        }
+        
         // an isLoaded flag will be set when the model is loaded, and not set when a new model is created ready to be saved.
         if (!$this->isLoaded()) {
-            $this->_getDb()->insert($this->table(), $this->getData());
+            $this->_getDb()->insert($this->table(), $dataArray);
             $this->setData($this->primaryKey(), $this->_getDb()->lastInsertId());
             
+            // reload, not just to fetch last insert id, but to fetch default column data (current_timestamp, etc)..
             $select = $this->getSelect();
             $select->where($this->table() . "." . $this->primaryKey() . " = ?", $this->getId());
             $this->fetchOne($select);
         }
         else {
-            $data = $this->getData();
-            unset($data[$this->primaryKey()]);
-            $this->_getDb()->update($this->table(), $data, $this->primaryKey() . " = " . $this->getId());
+            unset($dataArray[$this->primaryKey()]);
+            $this->_getDb()->update($this->table(), $dataArray, $this->primaryKey() . " = " . $this->getId());
         }
         
         $this->_afterSave();
@@ -130,7 +154,11 @@ abstract class BTS_Model extends BTS_Object {
     }
     
     protected function getCacheKey() {
-        return get_called_class();
+        return "BTS_MODEL_" . get_called_class() . "_OBJECT";
+    }
+    
+    protected function getSchemaCacheKey() {
+        return "BTS_MODEL_" . get_called_class() . "_SCHEMA";
     }
     /**
      * Fetch a single row
