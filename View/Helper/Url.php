@@ -72,6 +72,22 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             $urlOptions = $urlOptions + $currentParams;
         }
         
+        if (isset($urlOptions['_removeExtraParams'])) {
+            $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+            
+            foreach ($currentParams as $param => $value) {
+                if (!in_array($param, array("module", "controller", "action"))) {
+                    unset($currentParams[$param]);
+                }
+            }
+            unset($urlOptions['_removeExtraParams']);
+            
+            // force a reset to remove the requested param(s)
+            $reset = true;
+            
+            $urlOptions = $urlOptions + $currentParams;
+        }
+        
         if (is_null($name)) {
             $name = "default";
         }
