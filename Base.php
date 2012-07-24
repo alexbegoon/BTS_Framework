@@ -10,6 +10,7 @@ class BTS_Base {
     
     static $_messenger;
     static $_user;
+    static $_registry = array();
     
     static function capitalize($str) {
         return str_replace(' ', '', ucwords(preg_replace('/[\s_]+/', ' ', $str)));
@@ -100,10 +101,7 @@ class BTS_Base {
     }
     
     static function getSession($ns = "BTS_Base") {
-        if (is_null(self::$_sessions[$ns])) {
-            self::$_sessions[$ns] = new Zend_Session_Namespace($ns);
-        }
-        return self::$_sessions[$ns];
+        return BTS_Session::instance($ns);
     }
     
     /**
@@ -130,4 +128,20 @@ class BTS_Base {
         return $rtnstr;
     }
     
+    static function register($key, $value) {
+        self::$_registry[$key] = $value;
+    }
+    static function unregister($key) {
+        if (isset(self::$_registry[$key])) {
+            unset(self::$_registry[$key]);
+        }
+    }
+    static function registry($key, $default = null) {
+        if (isset(self::$_registry[$key])) {
+            return self::$_registry[$key];
+        }
+        else {
+            return $default;
+        }
+    }
 }
