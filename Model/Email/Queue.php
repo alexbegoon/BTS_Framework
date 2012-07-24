@@ -146,11 +146,16 @@ class BTS_Model_Email_Queue extends BTS_Model {
         catch (Exception $e) {
             echo "Couldn't send email to '" . $this->getRecipientEmail() . "' via transport " . strtoupper($config->bts->email->sendmethod) . "\n";
             if (strtoupper($config->bts->email->sendmethod) == "SES") {
-                $errorXml = simplexml_load_string($e->getMessage());
-                echo "\tError was: " . $errorXml->Error->Code . ": " . $errorXml->Error->Message . "\n";
+                $errorXml = @simplexml_load_string($e->getMessage());
+                if ($errorXml instanceof SimpleXMLElement) {
+                    echo "\tError was: " . $errorXml->Error->Code . ": " . $errorXml->Error->Message . "\n";
                 
-                if ($errorXml->Error->Code == "InvalidParameterValue" || $errorXml->Error->Code == "MessageRejected") {
-                    $this->setSent(self::STATUS_BLOCKED)->save();
+                    if ($errorXml->Error->Code == "InvalidParameterValue" || $errorXml->Error->Code == "MessageRejected") {
+                        $this->setSent(self::STATUS_BLOCKED)->save();
+                    }
+                }
+                else {
+                    echo "\tUnknown error. Data returned was:\n" . $e->getMessage() . "\n";
                 }
             }
             else {
