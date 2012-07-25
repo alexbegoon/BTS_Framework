@@ -24,7 +24,7 @@ class BTS_Object {
     public function __call($name, $arguments) {
         $matches = array();
         
-        preg_match("/^(set|get|unset|has)([A-Z]?.*)$/", $name, $matches);
+        preg_match("/^(set|get|unset|has|incr|decr)([A-Z]?.*)$/", $name, $matches);
         
         if (!empty($matches)) {
             $key = BTS_Base::decamelize($matches[2], "_");
@@ -49,12 +49,39 @@ class BTS_Object {
                 case "has":
                     return $this->hasData($key);
                     break;
+                case "incr":
+                    return $this->incr($key, $value);
+                    break;
+                case "decr":
+                    return $this->decr($key, $value);
+                    break;
             }
         }
         else {
             throw new Exception("Invalid Method: " . get_class($this) . "::" . $name);
         }
     }
+    
+    public function incr($key, $value = 1) {
+        if (is_numeric($this->getData($key))) {
+            $this->setData($key, $this->getData($key) + $value);
+            return $this->getData($key);
+        }
+        else {
+            throw new Exception("Cannot increment key '" . $key . "'. Not a number.");
+        }
+    }
+    
+    public function decr($key, $value = 1) {
+        if (is_numeric($this->getData($key))) {
+            $this->setData($key, $this->getData($key) - $value);
+            return $this->getData($key);
+        }
+        else {
+            throw new Exception("Cannot decrement key '" . $key . "'. Not a number.");
+        }
+    }
+    
     
     public function getData($key = null, $default = null) {
         if (is_null($key)) {
