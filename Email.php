@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @method string setSubject(string $subject) Set subject of message
+ * @method string getSubject() Get subject of message
+ */
+
 class BTS_Email extends BTS_Object {
     
     protected $_messageDataKeys = array();
@@ -46,16 +51,17 @@ class BTS_Email extends BTS_Object {
                 }
             }
 
+            $contents = preg_replace('/<!--(.*)-->/Uis', '', $contents);
             $contents = $prepend . $contents;
 
-            $this->setData('message', preg_replace("/\<!--([^\-\-\>]*)--\>/", "", $contents));
+            $this->setData('message', $contents);
             $this->setData('original_message', $this->getData('message'));
 
             preg_match_all("/\[([A-Z_]*)\]/", $this->getMessage(), $matches);
             foreach ($matches[1] as $match) {
                 $this->_messageDataKeys[strtolower($match)] = null;
             }
-            
+
             $this->_html = true;
         }
     }
