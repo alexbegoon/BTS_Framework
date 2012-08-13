@@ -250,6 +250,9 @@ abstract class BTS_Model extends BTS_Object {
         return $this->getData($this->primaryKey());
     }
     
+    /**
+     * @return \BTS_Model
+     */
     static function instance() {
         $class = get_called_class();
         return new $class();
