@@ -1,7 +1,7 @@
 <?php
 
 class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
-    public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true, $absolute = true, $host = null) {
+    public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true, $absolute = true, $host = null, $shorten = false) {
         $router = Zend_Controller_Front::getInstance()->getRouter();
         
         if (isset($urlOptions['_reset'])) {
@@ -88,6 +88,16 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             $urlOptions = $urlOptions + $currentParams;
         }
         
+        if (isset($urlOptions['_shorten'])) {
+            $shorten = true;
+            unset($urlOptions['_shorten']);
+            if (!$absolute) {
+                // $host must be forced to true so we get an absolute url, else the
+                // shortened url won't work.
+                $absolute = true;
+            }
+        }
+        
         if (is_null($name)) {
             $name = "default";
         }
@@ -105,6 +115,22 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
         
         if (isset($fragment)) {
             $url .= "#" . $fragment;
+        }
+        
+        if ($shorten) {
+            $client = new Zend_Http_Client("http://api.bit.ly/v3/shorten");
+            $client->setParameterGet(array(
+                "longUrl" => $url,
+                "login" => BTS_Base::getAppConfig()->services->bitly->login,
+                "apiKey" => BTS_Base::getAppConfig()->services->bitly->apikey,
+            ));
+            $response = $client->request();
+            if ($response->isSuccessful()) {
+                $json = Zend_Json::decode($response->getBody());
+                if ($json['status_code'] == 200) {
+                    $url = $json['data']['url'];
+                }
+            }
         }
         
         return $url;
