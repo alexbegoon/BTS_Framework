@@ -82,7 +82,10 @@ class BTS_Model_Email_Queue extends BTS_Model {
                 $mail->setReplyTo($this->getMessage()->getSenderEmail());
             }
             else {
-                if ($config->bts->email->reply_to) {
+                if ($this->getMessage()->getSenderEmail() != "") {
+                    $mail->setReplyTo($this->getMessage()->getSenderEmail());
+                }
+                else if ($config->bts->email->reply_to) {
                     $mail->setReplyTo($config->bts->email->reply_to);
                 }
             }
