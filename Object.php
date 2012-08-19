@@ -63,6 +63,10 @@ class BTS_Object {
     }
     
     public function incr($key, $value = 1) {
+        if (is_null($this->getData($key))) {
+            $this->setData($key, 0);
+        }
+        
         if (is_numeric($this->getData($key))) {
             $this->setData($key, $this->getData($key) + $value);
             return $this->getData($key);
@@ -73,6 +77,10 @@ class BTS_Object {
     }
     
     public function decr($key, $value = 1) {
+        if (is_null($this->getData($key))) {
+            $this->setData($key, 0);
+        }
+        
         if (is_numeric($this->getData($key))) {
             $this->setData($key, $this->getData($key) - $value);
             return $this->getData($key);
