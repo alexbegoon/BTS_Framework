@@ -15,11 +15,6 @@ abstract class BTS_Model_Collection implements Iterator, Countable, ArrayAccess 
     protected $_primaryKey;
     
     /**
-     * @var Zend_Db_Adapter_Mysqli
-     */
-    protected $_db;
-    
-    /**
      * @var Zend_Db_Select
      */
     protected $_select;
@@ -231,5 +226,15 @@ abstract class BTS_Model_Collection implements Iterator, Countable, ArrayAccess 
         }
         
         return $this->_primaryKey;
+    }
+    
+    public function __sleep() {
+        $this->_load();
+        
+        return array("_dataArray", "_loaded");
+    }
+    
+    public function __wakeup() {
+        ;
     }
 }
