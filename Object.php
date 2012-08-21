@@ -61,36 +61,43 @@ class BTS_Object {
             throw new Exception("Invalid Method: " . get_class($this) . "::" . $name);
         }
     }
-    
-    public function incr($key, $value = 1) {
+
+    public function incr($key, $value = null) {
         if (is_null($this->getData($key))) {
             $this->setData($key, 0);
         }
-        
+
+        if (is_null($value)) {
+            $value = 1;
+        }
+
         if (is_numeric($this->getData($key))) {
             $this->setData($key, $this->getData($key) + $value);
-            return $this->getData($key);
+            return $this;
         }
         else {
             throw new Exception("Cannot increment key '" . $key . "'. Not a number.");
         }
     }
-    
-    public function decr($key, $value = 1) {
+
+    public function decr($key, $value = null) {
         if (is_null($this->getData($key))) {
             $this->setData($key, 0);
         }
-        
+
+        if (is_null($value)) {
+            $value = 1;
+        }
+
         if (is_numeric($this->getData($key))) {
             $this->setData($key, $this->getData($key) - $value);
-            return $this->getData($key);
+            return $this;
         }
         else {
             throw new Exception("Cannot decrement key '" . $key . "'. Not a number.");
         }
     }
-    
-    
+
     public function getData($key = null, $default = null) {
         if (is_null($key)) {
             return $this->_data;
