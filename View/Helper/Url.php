@@ -3,6 +3,7 @@
 class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
     public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true, $absolute = true, $host = null, $shorten = false) {
         $router = Zend_Controller_Front::getInstance()->getRouter();
+        /* @var $router Zend_Controller_Router_Rewrite */
         
         if (isset($urlOptions['_reset'])) {
             $reset = $urlOptions['_reset'];
@@ -24,13 +25,11 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
                 // didn't specify a controller or action, or specified other keys (possibly url paramters)
                 // so probably wants current url. don't reset
                 $reset = false;
-                // for some reason, sometimes this gets unset, so let's re-set it..
-                $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
-                if (isset($currentParams['module'])) {
-                    $urlOptions['module'] = $currentParams['module'];
+                
+                if ($router->getCurrentRouteName() != "default") {
+                    // reset this if route name is not default, else it might not get re-built correctly
+                    $urlOptions['_name'] = $router->getCurrentRouteName();
                 }
-                $urlOptions['controller'] = $currentParams['controller'];
-                $urlOptions['action'] = $currentParams['action'];
             }
             else {
                 $reset = true;
