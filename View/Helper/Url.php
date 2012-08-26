@@ -2,6 +2,8 @@
 
 class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
     public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true, $absolute = true, $host = null, $shorten = false) {
+        $request = Zend_Controller_Front::getInstance()->getRequest();
+        /* @var $request Zend_Controller_Request_Http */
         $router = Zend_Controller_Front::getInstance()->getRouter();
         /* @var $router Zend_Controller_Router_Rewrite */
         
@@ -59,7 +61,7 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
         }
         
         if (isset($urlOptions['_removeParam'])) {
-            $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+            $currentParams = $request->getParams();
             
             if (is_string($urlOptions['_removeParam'])) {
                 $urlOptions['_removeParam'] = array($urlOptions['_removeParam']);
@@ -79,7 +81,7 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
         }
         
         if (isset($urlOptions['_removeExtraParams'])) {
-            $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+            $currentParams = $request->getParams();
             
             foreach ($currentParams as $param => $value) {
                 if (!in_array($param, array("module", "controller", "action"))) {
