@@ -24,6 +24,13 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
                 // didn't specify a controller or action, or specified other keys (possibly url paramters)
                 // so probably wants current url. don't reset
                 $reset = false;
+                // for some reason, sometimes this gets unset, so let's re-set it..
+                $currentParams = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+                if (isset($currentParams['module'])) {
+                    $urlOptions['module'] = $currentParams['module'];
+                }
+                $urlOptions['controller'] = $currentParams['controller'];
+                $urlOptions['action'] = $currentParams['action'];
             }
             else {
                 $reset = true;
@@ -103,7 +110,7 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
         }
         
         if ($absolute) {
-            $hostHelper = new Zend_View_Helper_ServerUrl();
+            $hostHelper = new BTS_View_Helper_ServerUrl();
             if (!is_null($host)) {
                 $hostHelper->setHost($host);
             }
