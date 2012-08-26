@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @method string setSubject(string $subject) Set subject of message
+ * @method BTS_Email setSubject(string $subject) Set subject of message
  * @method string getSubject() Get subject of message
  */
 
