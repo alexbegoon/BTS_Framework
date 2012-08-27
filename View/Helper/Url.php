@@ -18,7 +18,7 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             $regularKeys = 0;
             foreach ($urlOptions as $key => $val) {
                 // remove keys which translate to actions for the router assembly
-                if (substr($key, 0, 1) != "_") {
+                if (substr($key, 0, 1) != "_" && !in_array($key, array("module", "controller", "action"))) {
                     $regularKeys++;
                 }
             }
