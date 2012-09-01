@@ -312,4 +312,12 @@ abstract class BTS_Model extends BTS_Object {
         }
         return $default;
     }
+    
+    public function __sleep() {
+        $data = parent::__sleep();
+        $data[] = "_schema";
+        $data[] = "_origData";
+        $data[] = "_loaded";
+        return $data;
+    }
 }
