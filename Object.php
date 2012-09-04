@@ -108,7 +108,7 @@ class BTS_Object {
         return $default;
     }
     public function hasData($key) {
-        return isset($this->_data[$key]);
+        return array_key_exists($key, $this->_data);
     }
     public function setData($key, $value = null) {
         if (is_array($key)) {
