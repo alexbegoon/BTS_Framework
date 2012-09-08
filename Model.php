@@ -319,6 +319,10 @@ abstract class BTS_Model extends BTS_Object {
         return $default;
     }
     
+    public function hasFieldChanged($key) {
+        return $this->getOrigData($key) != $this->getData($key);
+    }
+    
     public function __sleep() {
         $data = parent::__sleep();
         $data[] = "_schema";
