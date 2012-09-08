@@ -60,6 +60,9 @@ abstract class BTS_Model extends BTS_Object {
             $select = $this->getSelect();
             if (is_array($id)) {
                 foreach ($id as $k => $v) {
+                    if ($k == "_primary_key") {
+                        $k = $this->primaryKey();
+                    }
                     $select->where($this->table() . "." . $k . " = ?" , $v);
                 }
             }
@@ -68,6 +71,9 @@ abstract class BTS_Model extends BTS_Object {
                     $select->where($this->table() . "." . $this->primaryKey() . " = ?", $id);
                 }
                 else {
+                    if ($key == "_primary_key") {
+                        $key = $this->primaryKey();
+                    }
                     $select->where($this->table() . "." . $key . " = ?", $id);
                 }
             }
