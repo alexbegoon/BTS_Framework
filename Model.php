@@ -34,15 +34,10 @@ abstract class BTS_Model extends BTS_Object {
     protected $_schema;
     
     public function __construct($id = null, $key = null) {
-        $registryKey = $this->getSchemaCacheKey();
-        if (!Zend_Registry::isRegistered($registryKey)) {
-            $schema = BTS_Db::instance()->describeTable($this->table());
-            Zend_Registry::set($registryKey, $schema);
+        if (!$this->_schema = BTS_Base::getCache()->load($this->getSchemaCacheKey())) {
+            $this->_schema = BTS_Db::instance()->describeTable($this->table());
+            BTS_Base::getCache()->save($this->_schema, $this->getSchemaCacheKey());
         }
-        else {
-            $schema = Zend_Registry::get($registryKey);
-        }
-        $this->_schema = $schema;
         
         if (!is_null($id)) {
             return $this->load($id, $key);
