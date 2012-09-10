@@ -34,14 +34,21 @@ class BTS_Base {
     }
     static function getAppConfig() {
         if (is_null(self::$_appConfig)) {
-            self::$_appConfig = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
+            if (!self::$_appConfig = self::getCache()->load("BTS_BASE_APPCONFIG")) {
+                self::$_appConfig = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
+                self::getCache()->save(self::$_appConfig, "BTS_BASE_APPCONFIG");
+            }
         }
+        
         return self::$_appConfig;
     }
     static function getModuleConfig() {
         if (is_null(self::$_moduleConfig)) {
             $moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
-            self::$_moduleConfig = new Zend_Config_Ini(APPLICATION_PATH . "/modules/" . $moduleName . "/configs/module.ini", APPLICATION_ENV);
+            if (!self::$_moduleConfig = self::getCache()->load("BTS_BASE_MODULECONFIG_" . $moduleName)) {
+                self::$_moduleConfig = new Zend_Config_Ini(APPLICATION_PATH . "/modules/" . $moduleName . "/configs/module.ini", APPLICATION_ENV);
+                self::getCache()->save(self::$_appConfig, "BTS_BASE_MODULECONFIG_" . $moduleName);
+            }
         }
         return self::$_moduleConfig;
     }
