@@ -112,17 +112,32 @@ class BTS_Base {
     }
     
     /**
-     * @return \Zend_Cache_Core
+     * @return \Zend_Cache_Core|false
      */
     static function getCache() {
-        $cache = Zend_Registry::get('cache');
-        return $cache;
+        if (Zend_Registry::isRegistered("cache")) {
+            $cache = Zend_Registry::get('cache');
+            return $cache;
+        }
+        else {
+            return new Zend_Cache_Backend_BlackHole();
+        }
     }
     
     static function getVersion() {
-        $str = self::exec("svn info --xml " . dirname(APPLICATION_PATH));
-        $xml = simplexml_load_string($str);
-        return "r" . (string)$xml->entry->attributes()->revision;
+        $svnDir = dirname(APPLICATION_PATH) . "/.svn/";
+        $gitDir = dirname(APPLICATION_PATH) . "/.git/";
+        
+        if (file_exists($svnDir) && is_dir($svnDir)) {
+            $str = self::exec("svn info --xml " . dirname(APPLICATION_PATH));
+            $xml = simplexml_load_string($str);
+            return "r" . (string)$xml->entry->attributes()->revision;
+        }
+        else if (file_exists($gitDir) && is_dir($gitDir)) {
+            $str = self::exec("git rev-parse HEAD");
+            $str = preg_replace("/[\r|\n]/", "", $str);
+            return $str;
+        }
     }
     
     static function exec($cmd) {
