@@ -47,7 +47,7 @@ class BTS_Base {
             $moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
             if (!self::$_moduleConfig = self::getCache()->load("BTS_BASE_MODULECONFIG_" . $moduleName)) {
                 self::$_moduleConfig = new Zend_Config_Ini(APPLICATION_PATH . "/modules/" . $moduleName . "/configs/module.ini", APPLICATION_ENV);
-                self::getCache()->save(self::$_appConfig, "BTS_BASE_MODULECONFIG_" . $moduleName);
+                self::getCache()->save(self::$_moduleConfig, "BTS_BASE_MODULECONFIG_" . $moduleName);
             }
         }
         return self::$_moduleConfig;
