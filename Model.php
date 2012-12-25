@@ -90,8 +90,8 @@ abstract class BTS_Model extends BTS_Object {
      * @access private 
      */
     public function __afterLoad() {
-        $this->_afterLoad();
         $this->_loaded = true;
+        $this->_afterLoad();
     }
     
     /**
