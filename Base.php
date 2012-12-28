@@ -60,6 +60,11 @@ class BTS_Base {
      */
     static function getActiveUser() {
         $auth = Zend_Auth::getInstance();
+        
+        if (Zend_Registry::isRegistered("Auth_Storage")) {
+            $auth->setStorage(Zend_Registry::get("Auth_Storage"));
+        }
+        
         if ($auth->hasIdentity()) {
             if (is_null(self::$_user)) {
                 $user = $auth->getIdentity();
@@ -121,22 +126,6 @@ class BTS_Base {
         }
         else {
             return new Zend_Cache_Backend_BlackHole();
-        }
-    }
-    
-    static function getVersion() {
-        $svnDir = dirname(APPLICATION_PATH) . "/.svn/";
-        $gitDir = dirname(APPLICATION_PATH) . "/.git/";
-        
-        if (file_exists($svnDir) && is_dir($svnDir)) {
-            $str = self::exec("svn info --xml " . dirname(APPLICATION_PATH));
-            $xml = simplexml_load_string($str);
-            return "r" . (string)$xml->entry->attributes()->revision;
-        }
-        else if (file_exists($gitDir) && is_dir($gitDir)) {
-            $str = self::exec("git rev-parse HEAD");
-            $str = preg_replace("/[\r|\n]/", "", $str);
-            return $str;
         }
     }
     
