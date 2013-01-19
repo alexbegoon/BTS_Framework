@@ -14,7 +14,7 @@ class BTS_Paypal_Form extends BTS_Object {
         $url = $urlHelper->url(array("controller" => $config->ipn->url->controller, "action" => $config->ipn->url->action), null, true, null, true, $this->getConfig()->ipn->url->host);
         
         $this->setData(array(
-            'cmd'        => '_xclick',
+            'cmd'        => $this->hasData("cmd") ? $this->getData("cmd") : '_xclick',
             'business'   => $config->email,
             'cert_id'    => $config->cert->id,
             'notify_url' => $url,
