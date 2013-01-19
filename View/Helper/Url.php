@@ -126,19 +126,7 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
         }
         
         if ($shorten) {
-            $client = new Zend_Http_Client("http://api.bit.ly/v3/shorten");
-            $client->setParameterGet(array(
-                "longUrl" => $url,
-                "login" => BTS_Base::getAppConfig()->services->bitly->login,
-                "apiKey" => BTS_Base::getAppConfig()->services->bitly->apikey,
-            ));
-            $response = $client->request();
-            if ($response->isSuccessful()) {
-                $json = Zend_Json::decode($response->getBody());
-                if ($json['status_code'] == 200) {
-                    $url = $json['data']['url'];
-                }
-            }
+            $url = BTS_Service_Bitly::shorten($url);
         }
         
         return $url;
