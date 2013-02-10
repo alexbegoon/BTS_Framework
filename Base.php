@@ -98,11 +98,12 @@ class BTS_Base {
             $data = print_r($data, true);
         }
         
-        $data = date("Y-m-d H:i:s") . ": " . $data . "\n";
+        $logFilePath = dirname(APPLICATION_PATH) . "/logs/" . self::getAppConfig()->bts->base->logfile;
         
-        $fh = fopen(self::getAppConfig()->bts->logpath, "a");
-        fwrite($fh, $data);
-        fclose($fh);
+        $logger = new Zend_Log();
+        $logger->addWriter(new Zend_Log_Writer_Stream($logFilePath));
+        //$logger->addWriter(new Zend_Log_Writer_Db(BTS_Db::instance(), BTS_Db::getTable("log")));
+        $logger->log($data, Zend_Log::INFO);
     }
     
     /**
