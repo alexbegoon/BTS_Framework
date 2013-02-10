@@ -21,6 +21,8 @@ class BTS_Object {
      */
     protected $_fieldPrefix = null;
 
+    public function __construct() {}
+    
     public function __call($name, $arguments) {
         $matches = array();
         
@@ -99,14 +101,22 @@ class BTS_Object {
     }
 
     public function getData($key = null, $default = null) {
+        $return = $default;
         if (is_null($key)) {
-            return $this->_data;
+            $this->_beforeGetData();
+            $return = $this->_data;
+            $this->_afterGetData($return);
         }
         if (isset($this->_data[$key])) {
-            return $this->_data[$key];
+            $return = $this->_data[$key];
         }
-        return $default;
+        
+        return $return;
     }
+    
+    protected function _beforeGetData() {}
+    protected function _afterGetData(&$array) {}
+    
     public function hasData($key) {
         return array_key_exists($key, $this->_data);
     }
