@@ -7,19 +7,59 @@ class BTS_Paypal_Form extends BTS_Object {
     }
     
     public function toString() {
-        
         $config = $this->getConfig();
         
         $urlHelper = new BTS_View_Helper_Url();
-        $url = $urlHelper->url(array("controller" => $config->ipn->url->controller, "action" => $config->ipn->url->action), null, true, null, true, $this->getConfig()->ipn->url->host);
+        $notifyUrl = $urlHelper->url(
+                array(
+                    "controller" => $config->ipn->url->controller, 
+                    "action" => $config->ipn->url->notify,
+                ),
+                null,
+                true,
+                null,
+                true,
+                $this->getConfig()->ipn->url->host
+        );
+        $cancelUrl = $urlHelper->url(
+                array(
+                    "controller" => $config->ipn->url->controller, 
+                    "action" => $config->ipn->url->cancel,
+                    "redir" => base64_encode(BTS_Base::getSession()->referer_url),
+                ),
+                null,
+                true,
+                null,
+                true,
+                $this->getConfig()->ipn->url->host
+        );
+        $returnUrl = $urlHelper->url(
+                array(
+                    "controller" => $config->ipn->url->controller, 
+                    "action" => $config->ipn->url->return,
+                    "redir" => base64_encode(BTS_Base::getSession()->referer_url),
+                ),
+                null,
+                true,
+                null,
+                true,
+                $this->getConfig()->ipn->url->host
+        );
+        
+        $custom = $this->hasCustom() ? $this->getCustom() : array();
+        $custom = array_merge($custom, array("user" => BTS_Base::getActiveUser()->getId()));
         
         $this->setData(array(
-            'cmd'        => $this->hasData("cmd") ? $this->getData("cmd") : '_xclick',
-            'business'   => $config->email,
-            'cert_id'    => $config->cert->id,
-            'notify_url' => $url,
-            'custom'     => base64_encode(serialize(array("user" => BTS_Base::getActiveUser()->getId()))),
+            'cmd'           => $this->hasData("cmd") ? $this->getData("cmd") : '_xclick',
+            'business'      => $config->email,
+            'cert_id'       => $config->cert->id,
+            'notify_url'    => $notifyUrl,
+            'cancel_return' => $cancelUrl,
+            'return'        => $returnUrl,
+            'custom'        => base64_encode(serialize($custom)),
         ));
+        
+        var_dump($this->getData());
         
         if (strlen($this->getData('custom') > 255)) {
             throw new Exception("Field 'custom' is too long (255 character limit, " . strlen($this->getData('custom') . " presented)"));
@@ -30,33 +70,50 @@ class BTS_Paypal_Form extends BTS_Object {
         $form->setName("paypal_form");
         $form->setAction($this->getConfig()->url);
         
-        $element = new Zend_Form_Element_Hidden("cmd");
-        $element->setValue("_s-xclick");
-        $element->removeDecorator("label");
-        $form->addElement($element);
+        if ($config->encrypt) {
+            $cmdElement = new Zend_Form_Element_Hidden("cmd");
+            $cmdElement->setValue("_s-xclick");
+            $cmdElement->removeDecorator("label");
+            $form->addElement($cmdElement);
+
+            $encrElement = new Zend_Form_Element_Hidden("encrypted");
+            $encrElement->setValue($this->paypal_encrypt($this->getData()));
+            $encrElement->removeDecorator("label");
+            $form->addElement($encrElement);
+        }
+        else {
+            foreach ($this->getData() as $key => $value) {
+                $element = new Zend_Form_Element_Hidden($key);
+                $element->setValue($value);
+                $element->removeDecorator("label");
+                $form->addElement($element);
+            }
+        }
         
-        $element = new Zend_Form_Element_Hidden("encrypted");
-        $element->setValue($this->paypal_encrypt($this->getData()));
-        $element->removeDecorator("label");
-        $form->addElement($element);
+        if (APPLICATION_ENV != "production") {
+            $submitElement = new Zend_Form_Element_Button("btn_send");
+            $submitElement->setAttrib("type", "submit");
+            $submitElement->setLabel("Send");
+            $submitElement->removeDecorator('DtDdWrapper');
+            $form->addElement($submitElement);
+        }
 
         return $form;
     }
     
     function paypal_encrypt($hash) {
-        
-        $keyFileBasePath = APPLICATION_PATH . "/configs/paypal/" . APPLICATION_ENV . "/";
-        
         $config = $this->getConfig();
+        
+        $keyFileBasePath = APPLICATION_PATH . "/configs/paypal/" . $config->cert->directory . "/";
 
 	if (!file_exists($keyFileBasePath . $config->cert->private_key)) {
-            throw new Exception("Public key file (" . $keyFileBasePath . $config->cert->private_key . ") not found");
+            throw new Exception("Private key file (" . $keyFileBasePath . $config->cert->private_key . ") not found");
 	}
         if (!file_exists($keyFileBasePath . $config->cert->public_cert)) {
-            throw new Exception("Public key file (" . $keyFileBasePath . $config->cert->public_cert . ") not found");
+            throw new Exception("Public certificate file (" . $keyFileBasePath . $config->cert->public_cert . ") not found");
 	}
 	if (!file_exists($keyFileBasePath . $config->cert->paypal_cert)) {
-            throw new Exception("Public key file (" . $keyFileBasePath . $config->cert->paypal_cert . ") not found");
+            throw new Exception("Paypal certificate file (" . $keyFileBasePath . $config->cert->paypal_cert . ") not found");
 	}
         
 	$hash['bn']= 'ZF/BTS.Paypal';
