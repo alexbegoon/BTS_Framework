@@ -37,7 +37,16 @@ class BTS_Model_Email_Message extends BTS_Model {
         }
         
         if (isset($this->_messageData["unique_id"])) {
-            $message = str_replace("[EXTERNAL_URL]", $this->_messageData["base_url"] . '/message/view/id/' . $this->_messageData["unique_id"], $message);
+            if (isset($this->_messageData["base_url"])) {
+                $baseUrl = $this->_messageData["base_url"];
+            }
+            else {
+                $vr = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+                $view = $vr->view;
+                $baseUrl = substr($view->serverUrl("/"), 0, -1);
+            }
+            
+            $message = str_replace("[EXTERNAL_URL]", $baseUrl . '/message/view/id/' . $this->_messageData["unique_id"], $message);
         
             if ($this->getTracking() == 1) {
                 $message .= PHP_EOL;
