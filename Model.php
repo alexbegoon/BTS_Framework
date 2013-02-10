@@ -98,6 +98,14 @@ abstract class BTS_Model extends BTS_Object {
      * @return \BTS_Model 
      */
     public function save() {
+        if (is_array($this->_extraData) && count($this->_extraData) > 0) {
+            if (is_null($this->_extraDataField)) {
+                throw new Exception("ExtraData has been defined, yet this model does not have an ExtraData field assigned.");
+            }
+            
+            $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
+        }
+        
         $this->_beforeSave();
         
         // this prevents sql errors caused by data keys sent to the model and the column
@@ -134,15 +142,7 @@ abstract class BTS_Model extends BTS_Object {
     }
     
     // to be overriden
-    protected function _beforeSave() {
-        if (is_array($this->_extraData) && count($this->_extraData) > 0) {
-            if (is_null($this->_extraDataField)) {
-                throw new Exception("ExtraData has been defined, yet this model does not have an ExtraData field assigned.");
-            }
-            
-            $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
-        }
-    }
+    protected function _beforeSave() {}
     protected function _afterSave() {}
     
     /**
