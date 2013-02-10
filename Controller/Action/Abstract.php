@@ -56,8 +56,13 @@ abstract class BTS_Controller_Action_Abstract extends Zend_Controller_Action {
         return $url;
     }
     
-    protected function _addSuccess($message) {
-        $this->_helper->FlashMessenger(array("success" => $message));
+    protected function _addSuccess($message, $immediate = false) {
+        if (!$immediate) {
+            $this->_helper->FlashMessenger(array("success" => $message));
+        }
+        else {
+            $this->_addImmediateMessage($message, "success");
+        }
         return $this;
     }
     
@@ -71,12 +76,22 @@ abstract class BTS_Controller_Action_Abstract extends Zend_Controller_Action {
         return $this;
     }
     
-    protected function _addError($message) {
-        $this->_helper->FlashMessenger(array("error" => $message));
+    protected function _addError($message, $immediate = false) {
+        if (!$immediate) {
+            $this->_helper->FlashMessenger(array("error" => $message));
+        }
+        else {
+            $this->_addImmediateMessage($message, "error");
+        }
         return $this;
     }
-    protected function _addNotice($message) {
-        $this->_helper->FlashMessenger(array("notice" => $message));
+    protected function _addNotice($message, $immediate = false) {
+        if (!$immediate) {
+            $this->_helper->FlashMessenger(array("notice" => $message));
+        }
+        else {
+            $this->_addImmediateMessage($message, "notice");
+        }
         return $this;
     }
     
