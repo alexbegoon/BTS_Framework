@@ -59,8 +59,6 @@ class BTS_Paypal_Form extends BTS_Object {
             'custom'        => base64_encode(serialize($custom)),
         ));
         
-        var_dump($this->getData());
-        
         if (strlen($this->getData('custom') > 255)) {
             throw new Exception("Field 'custom' is too long (255 character limit, " . strlen($this->getData('custom') . " presented)"));
         }
