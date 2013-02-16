@@ -2,12 +2,8 @@
 
 class BTS_Paypal_Form extends BTS_Object {
     
-    public function getConfig() {
-        return new Zend_Config_Ini(APPLICATION_PATH . "/configs/paypal.ini", APPLICATION_ENV);
-    }
-    
     public function toString() {
-        $config = $this->getConfig();
+        $config = BTS_Paypal::getConfig();
         
         $urlHelper = new BTS_View_Helper_Url();
         $notifyUrl = $urlHelper->url(
@@ -19,7 +15,7 @@ class BTS_Paypal_Form extends BTS_Object {
                 true,
                 null,
                 true,
-                $this->getConfig()->ipn->url->host
+                $config->ipn->url->host
         );
         $cancelUrl = $urlHelper->url(
                 array(
@@ -31,7 +27,7 @@ class BTS_Paypal_Form extends BTS_Object {
                 true,
                 null,
                 true,
-                $this->getConfig()->ipn->url->host
+                $config->ipn->url->host
         );
         $returnUrl = $urlHelper->url(
                 array(
@@ -43,7 +39,7 @@ class BTS_Paypal_Form extends BTS_Object {
                 true,
                 null,
                 true,
-                $this->getConfig()->ipn->url->host
+                $config->ipn->url->host
         );
         
         $custom = $this->hasCustom() ? $this->getCustom() : array();
@@ -66,7 +62,7 @@ class BTS_Paypal_Form extends BTS_Object {
         $form = new Zend_Form();
         $form->setMethod("post");
         $form->setName("paypal_form");
-        $form->setAction($this->getConfig()->url);
+        $form->setAction($config->url);
         
         if ($config->encrypt) {
             $cmdElement = new Zend_Form_Element_Hidden("cmd");
@@ -75,7 +71,7 @@ class BTS_Paypal_Form extends BTS_Object {
             $form->addElement($cmdElement);
 
             $encrElement = new Zend_Form_Element_Hidden("encrypted");
-            $encrElement->setValue($this->paypal_encrypt($this->getData()));
+            $encrElement->setValue($this->encrypt($this->getData()));
             $encrElement->removeDecorator("label");
             $form->addElement($encrElement);
         }
@@ -88,7 +84,7 @@ class BTS_Paypal_Form extends BTS_Object {
             }
         }
         
-        if (APPLICATION_ENV != "production") {
+        if (!$config->live) {
             $submitElement = new Zend_Form_Element_Button("btn_send");
             $submitElement->setAttrib("type", "submit");
             $submitElement->setLabel("Send");
@@ -99,8 +95,8 @@ class BTS_Paypal_Form extends BTS_Object {
         return $form;
     }
     
-    function paypal_encrypt($hash) {
-        $config = $this->getConfig();
+    function encrypt($hash) {
+        $config = BTS_Paypal::getConfig();
         
         $keyFileBasePath = APPLICATION_PATH . "/configs/paypal/" . $config->cert->directory . "/";
 
@@ -114,7 +110,7 @@ class BTS_Paypal_Form extends BTS_Object {
             throw new Exception("Paypal certificate file (" . $keyFileBasePath . $config->cert->paypal_cert . ") not found");
 	}
         
-	$hash['bn']= 'ZF/BTS.Paypal';
+	$hash['bn'] = 'ZF/BTS.Paypal';
 
 	$data = "";
 	foreach ($hash as $key => $value) {
