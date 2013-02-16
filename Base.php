@@ -58,12 +58,11 @@ class BTS_Base {
     /**
      * @return \BTS_Model
      */
-    static function getActiveUser() {
+    static function getActiveUser($storage_key = "Auth") {
         $auth = Zend_Auth::getInstance();
         
-        if (Zend_Registry::isRegistered("Auth_Storage")) {
-            $auth->setStorage(Zend_Registry::get("Auth_Storage"));
-        }
+        $storage = new Zend_Auth_Storage_Session($storage_key);
+        $auth->setStorage($storage);
         
         if ($auth->hasIdentity()) {
             if (is_null(self::$_user)) {
