@@ -9,7 +9,7 @@ ini_set('display_errors',true);
 
 // Define path to application directory
 defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', ROOT_DIR . '/application');
+    || define('APPLICATION_PATH', realpath(ROOT_DIR) . '/application');
 
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
