@@ -8,8 +8,6 @@ abstract class BTS_Controller_Action_Abstract extends Zend_Controller_Action {
     protected $_flashMessenger = null;
 
     public function init() {
-        Zend_Registry::set("Auth_Storage", new Zend_Auth_Storage_Session($this->_authStorage));
-        
         if ($this->getRequest()->isXmlHttpRequest() || $this->getRequest()->getParam('isAjax')) {
             $this->view->layout()->disableLayout();
             $this->_helper->viewRenderer->setNoRender();
@@ -19,14 +17,14 @@ abstract class BTS_Controller_Action_Abstract extends Zend_Controller_Action {
     
     public function preDispatch() {
         if ($this->_requiresAuth) {
-            if (!BTS_Base::getActiveUser()) {
+            if (!BTS_Base::getActiveUser($this->_authStorage)) {
                 $referer = $this->view->currentUrl(true);
                 
                 $this->_addInfo("Please login to continue.");
                 $this->_redirect($this->_loginRoute . "/redir/" . $referer);
             }
-            
         }
+        $this->view->user = BTS_Base::getActiveUser($this->_authStorage);
     }
     
     protected function _redirectReferer() {
