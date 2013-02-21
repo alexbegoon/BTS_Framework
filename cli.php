@@ -12,10 +12,7 @@ defined('APPLICATION_PATH')
     || define('APPLICATION_PATH', realpath(ROOT_DIR) . '/application');
 
 // Ensure library/ is on include_path
-set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(dirname(ROOT_DIR) . '/library'),
-    get_include_path(),
-)));
+set_include_path(implode(PATH_SEPARATOR, array(realpath(ROOT_DIR . '/library'), get_include_path())));
 
 //require_once('Zend/Loader/Autoloader.php');
 //// Should probably take this from the main config file...
