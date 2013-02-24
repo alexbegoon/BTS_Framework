@@ -110,15 +110,16 @@ class BTS_View_Helper_Url extends Zend_View_Helper_Abstract {
             $name = "default";
         }
         
+        $url = $router->assemble($urlOptions, $name, $reset, $encode);
         if ($absolute) {
             $hostHelper = new BTS_View_Helper_ServerUrl();
             if (!is_null($host)) {
                 $hostHelper->setHost($host);
             }
-            $url = $hostHelper->serverUrl($router->assemble($urlOptions, $name, $reset, $encode));
-        }
-        else {
-            $url = $router->assemble($urlOptions, $name, $reset, $encode);
+            else {
+                $hostHelper->setHost($_SERVER['HTTP_HOST']);
+            }
+            $url = $hostHelper->serverUrl($url);
         }
         
         if (isset($fragment)) {
