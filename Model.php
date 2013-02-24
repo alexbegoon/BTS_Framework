@@ -314,8 +314,13 @@ abstract class BTS_Model extends BTS_Object {
         return $default;
     }
     
-    public function hasFieldChanged($key) {
-        return $this->getOrigData($key) != $this->getData($key);
+    public function hasFieldChanged($key = null) {
+        if (!is_null($key)) {
+            return $this->getOrigData($key) != $this->getData($key);
+        }
+        else {
+            return count(array_diff($this->_origData, $this->_data)) > 0;
+        }
     }
     
     public function __sleep() {
