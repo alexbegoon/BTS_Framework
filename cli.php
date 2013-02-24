@@ -73,6 +73,9 @@ if(isset($opts->a)) {
         }
         $request->setParams($params);
     }
+    if ($opts->getOption("v")) {
+        $request->setParam("_debug", true);
+    }
     
     $front = Zend_Controller_Front::getInstance();
     $front->setParam('disableOutputBuffering', true);
