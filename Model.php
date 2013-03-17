@@ -23,9 +23,18 @@ abstract class BTS_Model extends BTS_Object {
     protected $_extraData = null;
     
     /**
+     * Has the model been loaded?
+     * 
      * @var boolean
      */
     protected $_loaded = false;
+    
+    /**
+     * Is this a new model (not retrieved from the database)
+     * 
+     * @var boolean
+     */
+    protected $_new = false;
     
     /**
      * @var Zend_Db_Adapter_Abstract
@@ -108,6 +117,10 @@ abstract class BTS_Model extends BTS_Object {
             $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
         }
         
+        if (!$this->isLoaded()) {
+            $this->_new = true;
+        }
+        
         $this->_beforeSave();
         
         // this prevents sql errors caused by data keys sent to the model and the column
@@ -139,7 +152,7 @@ abstract class BTS_Model extends BTS_Object {
         }
         
         $this->_afterSave();
-        
+        $this->_new = false;
         return $this;
     }
     
@@ -235,6 +248,10 @@ abstract class BTS_Model extends BTS_Object {
      */
     public function isLoaded() {
         return $this->_loaded;
+    }
+    
+    public function isNew() {
+        return $this->_new;
     }
     
     public function table() {
