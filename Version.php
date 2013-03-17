@@ -2,16 +2,19 @@
 
 class BTS_Version {
     
-    const BTS_VERSION = "1.0.3";
+    const BTS_VERSION = "1.0.4";
     
     public static function getVersion() {
         $list = explode(".", self::BTS_VERSION);
-        return array(
+        $version = array(
             "major" => $list[0],
             "minor" => $list[1],
-            "revision" => $list[2],
-            
+            "revision" => $list[2]
         );
+        if (count($list) == 4) {
+            $version['maintenance'] = $list[3];
+        }
+        return $version;
     }
     
     public static function getAppVersion() {
@@ -21,12 +24,15 @@ class BTS_Version {
         
         $class = get_called_class();
         $list = explode(".", $class::APP_VERSION);
-        return array(
+        $version = array(
             "major" => $list[0],
             "minor" => $list[1],
             "revision" => $list[2],
-            
         );
+        if (count($list) == 4) {
+            $version['maintenance'] = $list[3];
+        }
+        return $version;
     }
     
     public static function getVCSRevision() {
@@ -36,12 +42,16 @@ class BTS_Version {
         if (file_exists($svnDir) && is_dir($svnDir)) {
             $str = "svn info --xml " . dirname(APPLICATION_PATH);
             $xml = simplexml_load_string(`$str`);
-            return "r" . (string)$xml->entry->attributes()->revision;
+            if ($xml) {
+                return "r" . (string)$xml->entry->attributes()->revision;
+            }
         }
         else if (file_exists($gitDir) && is_dir($gitDir)) {
             $str = `git rev-parse HEAD`;
-            $str = preg_replace("/[\r|\n]/", "", $str);
-            return $str;
+            if ($str && $str != "") {
+                $str = preg_replace("/[\r|\n]/", "", $str);
+                return $str;
+            }
         }
         else {
             return false;
