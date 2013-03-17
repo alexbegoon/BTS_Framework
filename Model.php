@@ -75,7 +75,9 @@ abstract class BTS_Model extends BTS_Object {
         }
         
         $this->fetchOne($select);
-        $this->_afterLoad();
+        if ($this->isLoaded()) {
+            $this->_afterLoad();
+        }
         return $this;
     }
     protected function _beforeLoad() {}
