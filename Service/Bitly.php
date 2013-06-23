@@ -5,6 +5,9 @@ class BTS_Service_Bitly {
     const CACHE_KEY_PREFIX = "BTS_SERVICE_BITLY_";
     
     public static function shorten($longUrl) {
+        if (!BTS_Base::getAppConfig()->services->bitly->enabled) {
+            return $longUrl;
+        }
         
         $select = BTS_Db::instance()
                     ->select()

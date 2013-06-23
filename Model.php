@@ -23,9 +23,18 @@ abstract class BTS_Model extends BTS_Object {
     protected $_extraData = null;
     
     /**
+     * Has the model been loaded?
+     * 
      * @var boolean
      */
     protected $_loaded = false;
+    
+    /**
+     * Is this a new model (not retrieved from the database)
+     * 
+     * @var boolean
+     */
+    protected $_new = false;
     
     /**
      * @var Zend_Db_Adapter_Abstract
@@ -75,7 +84,9 @@ abstract class BTS_Model extends BTS_Object {
         }
         
         $this->fetchOne($select);
-        $this->_afterLoad();
+        if ($this->isLoaded()) {
+            $this->_afterLoad();
+        }
         return $this;
     }
     protected function _beforeLoad() {}
@@ -104,6 +115,10 @@ abstract class BTS_Model extends BTS_Object {
             }
             
             $this->setData($this->_extraDataField, base64_encode(serialize($this->_extraData)));
+        }
+        
+        if (!$this->isLoaded()) {
+            $this->_new = true;
         }
         
         $this->_beforeSave();
@@ -137,7 +152,7 @@ abstract class BTS_Model extends BTS_Object {
         }
         
         $this->_afterSave();
-        
+        $this->_new = false;
         return $this;
     }
     
@@ -235,6 +250,10 @@ abstract class BTS_Model extends BTS_Object {
         return $this->_loaded;
     }
     
+    public function isNew() {
+        return $this->_new;
+    }
+    
     public function table() {
         if ($prefix = BTS_Base::getAppConfig()->resources->db->params->tblprefix) {
             return $prefix . "_" . $this->_table;
@@ -314,8 +333,13 @@ abstract class BTS_Model extends BTS_Object {
         return $default;
     }
     
-    public function hasFieldChanged($key) {
-        return $this->getOrigData($key) != $this->getData($key);
+    public function hasFieldChanged($key = null) {
+        if (!is_null($key)) {
+            return $this->getOrigData($key) != $this->getData($key);
+        }
+        else {
+            return count(array_diff($this->_origData, $this->_data)) > 0;
+        }
     }
     
     public function __sleep() {
