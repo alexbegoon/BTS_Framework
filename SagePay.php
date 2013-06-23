@@ -43,7 +43,7 @@ class BTS_SagePay {
 	curl_setopt($curlSession, CURLOPT_RETURNTRANSFER,1); 
 	curl_setopt($curlSession, CURLOPT_TIMEOUT,30); 
         curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 1);
+        curl_setopt($curlSession, CURLOPT_SSL_VERIFYHOST, 2);
 
         $rawresponse = curl_exec($curlSession);
         
