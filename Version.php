@@ -2,7 +2,7 @@
 
 class BTS_Version {
     
-    const BTS_VERSION = "1.0.4";
+    const BTS_VERSION = "1.0.5";
     
     public static function getVersion() {
         $list = explode(".", self::BTS_VERSION);
