@@ -59,7 +59,7 @@ class BTS_Model_Email_Queue extends BTS_Model {
         
         $config = BTS_Base::getAppConfig();
         
-        $mail = new Zend_Mail();
+        $mail = new Zend_Mail("utf-8");
         $mail->setEncodingOfHeaders(Zend_Mime::ENCODING_BASE64);
         
         if ($this->getMessageType() & BTS_Model_Email_Message::TYPE_NEWSLETTER && $this->getMessageData('unsubscribe_link')) {
