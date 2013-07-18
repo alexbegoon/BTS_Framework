@@ -35,6 +35,7 @@ try {
             'verbose|v' => 'Verbose messages will be dumped to the default output.',
             'env|e=s' => 'Set environment mode (defaults to "production").',
             'params|p=s' => 'Parameters to controller.',
+            'info' => 'Display phpinfo() and exit',
         )
     );
     $opts->parse();
@@ -53,6 +54,11 @@ if (isset($opts->e)) {
 }
 else {
     define("APPLICATION_ENV", "production");
+}
+
+if (isset($opts->info)) {
+    phpinfo();
+    exit;
 }
 
 if(isset($opts->a)) {
