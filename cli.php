@@ -4,6 +4,12 @@ date_default_timezone_set('Europe/London');
 
 define("ROOT_DIR", dirname($_SERVER['SCRIPT_FILENAME']));
 
+if (file_exists(ROOT_DIR . "/public/ini.php")) {
+    // allow php.ini settings to be overridden on an application level, and have the same settings
+    // applied to the cli script.
+    include ROOT_DIR . "/public/ini.php";
+}
+
 error_reporting(E_ALL|E_STRICT);
 ini_set('display_errors',true);
 
