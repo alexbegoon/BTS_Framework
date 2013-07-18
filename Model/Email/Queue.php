@@ -60,9 +60,10 @@ class BTS_Model_Email_Queue extends BTS_Model {
         $config = BTS_Base::getAppConfig();
         
         $mail = new Zend_Mail();
+        $mail->setEncodingOfHeaders(Zend_Mime::ENCODING_BASE64);
         
         if ($this->getMessageType() & BTS_Model_Email_Message::TYPE_NEWSLETTER && $this->getMessageData('unsubscribe_link')) {
-            $mail->addHeader("List-Unsubscribe", "<mailto:" . $this->generateUnsubscribeAddress() . ">");
+            //$mail->addHeader("List-Unsubscribe", "<mailto:" . $this->generateUnsubscribeAddress() . ">");
         }
         
         $mail->addHeader("Content-ID", $this->getUniqueId());
