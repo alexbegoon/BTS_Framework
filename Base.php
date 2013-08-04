@@ -155,4 +155,7 @@ class BTS_Base {
             return $default;
         }
     }
+    static function debug() {
+        return self::getAppConfig()->bts->debug;
+    }
 }
